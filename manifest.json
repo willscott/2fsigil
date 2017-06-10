@@ -19,9 +19,6 @@
     "https://api.github.com/*",
     "https://raw.githubusercontent.com/2factorauth/twofactorauth/*"
   ],
-  "options_ui": {
-    "page": "options.html"
-  },
   "browser_action": {
     "default_icon": {
       "19": "icons/icon-19.png",

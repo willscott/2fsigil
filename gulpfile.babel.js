@@ -42,7 +42,7 @@ gulp.task('clean', () => {
 })
 
 gulp.task('build', (cb) => {
-  $.runSequence('clean', 'styles', 'ext', cb)
+  $.runSequence('clean', 'ext', cb)
 });
 
 gulp.task('watch', ['build'], () => {
@@ -66,17 +66,6 @@ gulp.task('ext', ['manifest', 'js'], () => {
 gulp.task('js', () => {
   return buildJS(target)
 })
-
-gulp.task('styles', () => {
-  return gulp.src('src/styles/**/*.scss')
-    .pipe($.plumber())
-    .pipe($.sass.sync({
-      outputStyle: 'expanded',
-      precision: 10,
-      includePaths: ['.']
-    }).on('error', $.sass.logError))
-    .pipe(gulp.dest(`build/${target}/styles`));
-});
 
 gulp.task("manifest", () => {
   return gulp.src('./manifest.json')
@@ -121,14 +110,12 @@ function mergeAll(dest) {
     pipe(['./src/_locales/**/*'], `./build/${dest}/_locales`),
     pipe([`./src/images/${target}/**/*`], `./build/${dest}/images`),
     pipe(['./src/images/shared/**/*'], `./build/${dest}/images`),
-    pipe(['./src/**/*.html'], `./build/${dest}`)
   )
 }
 
 function buildJS(target) {
   const files = [
     'background.js',
-    'options.js',
     'livereload.js'
   ]
 
