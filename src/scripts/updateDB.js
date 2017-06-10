@@ -1,5 +1,5 @@
 import storage from "./utils/storage";
-import yaml from "./utils/js-yaml.min";
+import yaml from "js-yaml";
 
 var refresh = function(fname, cb) {
   var xhr = new XMLHttpRequest();
