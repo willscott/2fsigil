@@ -1,8 +1,7 @@
 import storage from "./utils/storage";
 import yaml from "./utils/js-yaml.min";
 
-var refresh = function(name, cb) {
-  var dirListingURL = "https://api.github.com/repositories/17724730/contents/_data/";
+var refresh = function(fname, cb) {
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
@@ -14,12 +13,12 @@ var refresh = function(name, cb) {
       }
     }
   };
-  xhr.open("GET", dirListingURL + name, true);
+  xhr.open("GET", fname, true);
   xhr.send();
 }
 
 var GetFiles = function(cb) {
-  refresh("", function(dat) {
+  refresh("https://api.github.com/repositories/17724730/contents/_data/", function(dat) {
     var listing = JSON.parse(dat);
     var state = {inprogress: 0, files: [], done: cb};
     state.complete = (function () {
@@ -39,7 +38,7 @@ var GetFiles = function(cb) {
 var GetFile = function(name, hash, state) {
   storage.get('file/' + name, function(dat) {
     if(dat.hash !== hash) {
-      refresh(name, (function(name, hash, dat) {
+      refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(name, hash, dat) {
         var doc = yaml.safeLoad(dat);
         doc.hash = hash;
         storage.set({'file/' + name : doc});
