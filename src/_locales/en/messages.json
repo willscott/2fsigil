@@ -1,14 +1,14 @@
 {
   "appName": {
-    "message": "Ext Starter",
+    "message": "2 Factor Sigil",
     "description": "The name of the extension."
   },
   "appDescription": {
-    "message": "Boilerplate for building cross browser extensions",
+    "message": "Indicator for whether the current site supports 2fa",
     "description": "The description of the extension."
   },
   "btnTooltip": {
-    "message": "Ext Starter",
+    "message": "2 Factor Sigil",
     "description": "Tooltip for the button."
   }
 }

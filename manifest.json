@@ -11,15 +11,17 @@
   "background": {
     "scripts": [
       "scripts/background.js"
-    ]
+    ],
+    "persistent": false
   },
   "permissions": [
-    "tabs",
+    "alarms",
+    "declarativeContent",
     "storage",
     "https://api.github.com/*",
     "https://raw.githubusercontent.com/2factorauth/twofactorauth/*"
   ],
-  "browser_action": {
+  "page_action": {
     "default_icon": {
       "19": "icons/icon-19.png",
       "38": "icons/icon-38.png"

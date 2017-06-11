@@ -17,22 +17,24 @@ var refresh = function(fname, cb) {
   xhr.send();
 }
 
-var GetFiles = function(cb) {
-  refresh("https://api.github.com/repositories/17724730/contents/_data/", function(dat) {
-    var listing = JSON.parse(dat);
-    var state = {inprogress: 0, files: [], done: cb};
-    state.complete = (function () {
-      this.inprogress--;
-      if (this.inprogress == 0) {
-        this.done(this.files);
-      }
-    }).bind(state);
-    listing.forEach(function (file) {
-      state.inprogress++;
-      state.files.push(file.name);
-      GetFile(file.name, file.sha, state);
+var GetFiles = function() {
+  return new Promise(function (resolve) {
+    refresh("https://api.github.com/repositories/17724730/contents/_data/", function(dat) {
+      var listing = JSON.parse(dat);
+      var state = {inprogress: 0, files: [], done: resolve};
+      state.complete = (function () {
+        this.inprogress--;
+        if (this.inprogress == 0) {
+          this.done(this.files);
+        }
+      }).bind(state);
+      listing.forEach(function (file) {
+        state.inprogress++;
+        state.files.push(file.name);
+        GetFile(file.name, file.sha, state);
+      });
     });
-  })
+  });
 }
 
 var GetFile = function(name, hash, state) {
@@ -52,22 +54,30 @@ var GetFile = function(name, hash, state) {
 };
 
 var Update = function(files) {
-  var domains = new Set();
-  var links = {};
-  files.forEach(function(file) {
-    storage.get('file/' + file, function(dat) {
-      dat.websites.forEach(function(domain) {
-        if (domain.tfa && domain.tfa != "No") {
-          domains.add(domain.url);
-        }
-        if (domain.doc) {
-          links[domain.url] = domain.doc;
-        }
+  return new Promise(function (resolve) {
+    var domains = new Set();
+    var links = {};
+    var left = 0;
+    files.forEach(function(file) {
+      left++;
+      storage.get('file/' + file, function(dat) {
+        dat.websites.forEach(function(domain) {
+          if (domain.tfa && domain.tfa != "No") {
+            domains.add(domain.url);
+          }
+          if (domain.doc) {
+            links[domain.url] = domain.doc;
+          }
+          left--;
+          if(left == 0) {
+            resolve(domains);
+          }
+        });
       });
     });
+    module.exports.Domains = domains;
+    module.exports.Links = links;
   });
-  module.exports.Domains = domains;
-  module.exports.LInks = links;
 }
 
 module.exports = {GetFiles: GetFiles, GetFile: GetFile, Update: Update, Domains: new Set(), Links: {}};
