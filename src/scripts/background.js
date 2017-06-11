@@ -12,6 +12,15 @@ ext.alarms.onAlarm.addListener(function() {
   db.GetFiles().then(db.Update).then(updateRules);
 });
 
+ext.pageAction.onClicked.addListener(function(tab) {
+  var host = new URL(tab.url).host;
+  Object.keys(db.Links).forEach(function (dom) {
+    if (host.endsWith(dom)) {
+      ext.tabs.create({url: db.Links[dom]});
+    }
+  })
+});
+
 function updateRules() {
   var conditions = [];
   db.Domains.forEach(function(domain) {

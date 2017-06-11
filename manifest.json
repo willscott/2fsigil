@@ -17,6 +17,7 @@
   "permissions": [
     "alarms",
     "declarativeContent",
+    "activeTab",
     "storage",
     "https://api.github.com/*",
     "https://raw.githubusercontent.com/2factorauth/twofactorauth/*"
