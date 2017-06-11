@@ -39,17 +39,22 @@ var GetFiles = function() {
 
 var GetFile = function(name, hash, state) {
   storage.get('file/' + name, function(dat) {
-    if(dat.hash !== hash) {
-      refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(n, h, dat) {
-        var doc = yaml.safeLoad(dat);
-        doc.hash = h;
-        var nm = "file/" + n;
-        storage.set({nm: doc});
+    if (dat['file/' + name] !== undefined) {
+      var cur = JSON.parse(dat['file/'  + name]);
+      if(cur.hash == hash) {
         state.complete();
-      }).bind(this, name, hash));
-    } else {
-      state.complete();
+        return;
+      }
     }
+    refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(n, h, dat) {
+      var doc = yaml.safeLoad(dat);
+      doc.hash = h;
+      var nm = "file/" + n;
+      var str = JSON.serialize(doc);
+      storage.set({nm: str}, function() {
+        state.complete();
+      });
+    }).bind(this, name, hash));
   });
 };
 
@@ -61,7 +66,8 @@ var Update = function(files) {
     files.forEach(function(file) {
       left++;
       storage.get('file/' + file, function(dat) {
-        dat.websites.forEach(function(domain) {
+        var dict = JSON.parse(dat['file/' + file]);
+        dict.websites.forEach(function(domain) {
           if (domain.tfa && domain.tfa != "No") {
             domains.add(domain.url);
           }

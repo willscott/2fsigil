@@ -3,15 +3,14 @@ import db from "./updateDB";
 
 ext.runtime.onInstalled.addListener(function() {
   ext.alarms.create("update", {
-    "delayInMinutes": 1,
+    "delayInMinutes": 0,
     "periodInMinutes": 60 * 24
   });
-  updateRules();
 });
 
-ext.alarms.onAlarm.addListener(
+ext.alarms.onAlarm.addListener(function() {
   db.GetFiles().then(db.Update).then(updateRules);
-);
+});
 
 function updateRules() {
   var conditions = [];
