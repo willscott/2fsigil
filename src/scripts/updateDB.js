@@ -24,7 +24,7 @@ var GetFiles = function(cb) {
     state.complete = (function () {
       this.inprogress--;
       if (this.inprogress == 0) {
-        this.done();
+        this.done(this.files);
       }
     }).bind(state);
     listing.forEach(function (file) {
@@ -38,10 +38,11 @@ var GetFiles = function(cb) {
 var GetFile = function(name, hash, state) {
   storage.get('file/' + name, function(dat) {
     if(dat.hash !== hash) {
-      refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(name, hash, dat) {
+      refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(n, h, dat) {
         var doc = yaml.safeLoad(dat);
-        doc.hash = hash;
-        storage.set({'file/' + name : doc});
+        doc.hash = h;
+        var nm = "file/" + n;
+        storage.set({nm: doc});
         state.complete();
       }).bind(this, name, hash));
     } else {
@@ -50,4 +51,23 @@ var GetFile = function(name, hash, state) {
   });
 };
 
-module.exports = {GetFiles: GetFiles, GetFile: GetFile};
+var Update = function(files) {
+  var domains = new Set();
+  var links = {};
+  files.forEach(function(file) {
+    storage.get('file/' + file, function(dat) {
+      dat.websites.forEach(function(domain) {
+        if (domain.tfa && domain.tfa != "No") {
+          domains.add(domain.url);
+        }
+        if (domain.doc) {
+          links[domain.url] = domain.doc;
+        }
+      });
+    });
+  });
+  module.exports.Domains = domains;
+  module.exports.LInks = links;
+}
+
+module.exports = {GetFiles: GetFiles, GetFile: GetFile, Update: Update, Domains: new Set(), Links: {}};

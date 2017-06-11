@@ -1,12 +1,11 @@
 import ext from "./utils/ext";
+import db from "./updateDB";
 
-ext.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if(request.action === "perform-save") {
-      console.log("Extension Type: ", "/* @echo extension */");
-      console.log("PERFORM AJAX", request.data);
+ext.alarms.create("update", {
+  "delayInMinutes": 1,
+  "periodInMinutes": 60 * 24
+});
 
-      sendResponse({ action: "saved" });
-    }
-  }
+ext.alarms.onAlarm.addListener(
+  db.GetFiles(db.Update)
 );
