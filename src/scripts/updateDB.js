@@ -49,9 +49,10 @@ var GetFile = function(name, hash, state) {
     refresh("https://raw.githubusercontent.com/2factorauth/twofactorauth/master/_data/" + name, (function(n, h, dat) {
       var doc = yaml.safeLoad(dat);
       doc.hash = h;
-      var nm = "file/" + n;
+      var nm = {};
       var str = JSON.stringify(doc);
-      storage.set({nm: str}, function() {
+      nm["file/" + n] = str;
+      storage.set(nm, function() {
         state.complete();
       });
     }).bind(this, name, hash));
@@ -66,7 +67,7 @@ var Update = function(files) {
     files.forEach(function(file) {
       left++;
       storage.get('file/' + file, function(dat) {
-        if (!dat == !dat['file/' + file]) {
+        if (!dat || !dat['file/' + file]) {
           console.warn("File not stored: " + file);
           left--;
           return;
