@@ -66,6 +66,11 @@ var Update = function(files) {
     files.forEach(function(file) {
       left++;
       storage.get('file/' + file, function(dat) {
+        if (!dat == !dat['file/' + file]) {
+          console.warn("File not stored: " + file);
+          left--;
+          return;
+        }
         var dict = JSON.parse(dat['file/' + file]);
         dict.websites.forEach(function(domain) {
           if (domain.tfa && domain.tfa != "No") {
