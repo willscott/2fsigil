@@ -73,7 +73,7 @@ var Update = function(files) {
           return;
         }
         var dict = JSON.parse(dat['file/' + file]);
-        if (typeof dict.websites !== "Array") {
+        if (!dict.websites || !dict.websites.forEach) {
           console.log("Unexpected structure in " + file)
           left--;
           return;
