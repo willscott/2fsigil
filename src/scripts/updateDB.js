@@ -50,7 +50,7 @@ var GetFile = function(name, hash, state) {
       var doc = yaml.safeLoad(dat);
       doc.hash = h;
       var nm = "file/" + n;
-      var str = JSON.serialize(doc);
+      var str = JSON.stringify(doc);
       storage.set({nm: str}, function() {
         state.complete();
       });
