@@ -25,16 +25,16 @@ function updateRules() {
   var conditions = [];
   db.Domains.forEach(function(domain) {
     var url = new URL(domain);
-    conditions.push(new ext.declarativeContent.PageStateMatcher({
+    conditions.push(new chrome.declarativeContent.PageStateMatcher({
       pageUrl: { hostSuffix: url.host },
     }));
   });
 
-  ext.declarativeContent.onPageChanged.removeRules(undefined, function() {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
     chrome.declarativeContent.onPageChanged.addRules([
       {
         conditions: conditions,
-        actions: [ new ext.declarativeContent.ShowPageAction() ]
+        actions: [ new chrome.declarativeContent.ShowPageAction() ]
       }
     ]);
   });
