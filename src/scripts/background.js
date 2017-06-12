@@ -24,9 +24,13 @@ ext.pageAction.onClicked.addListener(function(tab) {
 function updateRules() {
   var conditions = [];
   db.Domains.forEach(function(domain) {
-    var url = new URL(domain);
+    var url = new URL(domain).host;
+    if (url.startsWith("www.")) {
+      url = url.split("www.")[1];
+    }
+    var host = url
     conditions.push(new chrome.declarativeContent.PageStateMatcher({
-      pageUrl: { hostSuffix: url.host },
+      pageUrl: { hostSuffix: url },
     }));
   });
 

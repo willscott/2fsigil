@@ -63,9 +63,8 @@ var Update = function(files) {
   return new Promise(function (resolve) {
     var domains = new Set();
     var links = {};
-    var left = 0;
+    var left = files.length;
     files.forEach(function(file) {
-      left++;
       storage.get('file/' + file, function(dat) {
         if (!dat || !dat['file/' + file]) {
           console.warn("File not stored: " + file);
@@ -83,7 +82,8 @@ var Update = function(files) {
             domains.add(domain.url);
           }
           if (domain.doc) {
-            links[domain.url] = domain.doc;
+            var url = new URL(domain.url);
+            links[url.host] = domain.doc;
           }
           left--;
           if(left == 0) {
