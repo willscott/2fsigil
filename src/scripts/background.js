@@ -37,7 +37,12 @@ function updateRules(domains) {
     chrome.declarativeContent.onPageChanged.addRules([
       {
         conditions: conditions,
-        actions: [ new chrome.declarativeContent.ShowPageAction() ]
+        actions: [ new chrome.declarativeContent.SetIcon({
+          "path": {
+            "19": "icons/action-19.png",
+            "38": "icons/action-38.png"
+          }
+        }) ]
       }
     ]);
   });
