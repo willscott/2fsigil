@@ -3,7 +3,7 @@ import db from "./updateDB";
 
 ext.runtime.onInstalled.addListener(function() {
   ext.alarms.create("update", {
-    "delayInMinutes": 0,
+    "delayInMinutes": 1,
     "periodInMinutes": 60 * 24
   });
 });
@@ -12,14 +12,35 @@ ext.alarms.onAlarm.addListener(function() {
   db.GetFiles().then(db.Update).then(updateRules);
 });
 
-ext.pageAction.onClicked.addListener(function(tab) {
+ext.browserAction.onClicked.addListener(function(tab) {
   var host = new URL(tab.url).host;
+  var found = false;
   Object.keys(db.Links).forEach(function (dom) {
-    if (host.endsWith(dom)) {
+    if (!found && host.endsWith(dom)) {
+      found = true;
       ext.tabs.create({url: db.Links[dom]});
     }
-  })
+  });
+  if (!found) {
+    ext.tabs.create({url: "https://github.com/2factorauth/twofactorauth/issues/new?title=Please Add " + host + "&body=Please Add " + host});
+  }
 });
+
+
+// per https://stackoverflow.com/questions/28750081/cant-pass-arguments-to-chrome-declarativecontent-seticon#28765872
+function createSetIconAction(path, callback) {
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d");
+  var image = new Image();
+  image.onload = function() {
+    ctx.drawImage(image,0,0,19,19);
+    var imageData = ctx.getImageData(0,0,19,19);
+    var action = new chrome.declarativeContent.SetIcon({imageData: imageData});
+    callback(action);
+  }
+  image.src = chrome.runtime.getURL(path);
+}
+
 
 function updateRules(domains) {
   var conditions = [];
@@ -34,16 +55,12 @@ function updateRules(domains) {
   });
 
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-    chrome.declarativeContent.onPageChanged.addRules([
-      {
-        conditions: conditions,
-        actions: [ new chrome.declarativeContent.SetIcon({
-          "path": {
-            "19": "icons/action-19.png",
-            "38": "icons/action-38.png"
-          }
-        }) ]
-      }
-    ]);
+    createSetIconAction("icons/action-19.png", function(setIconAction) {
+      chrome.declarativeContent.onPageChanged.addRules([
+        {
+          conditions: conditions,
+          actions: [ setIconAction ]
+        }]);
+    });
   });
 };

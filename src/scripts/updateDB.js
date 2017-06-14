@@ -84,12 +84,15 @@ var Update = function(files) {
           if (domain.doc) {
             var url = new URL(domain.url);
             links[url.host] = domain.doc;
-          }
-          left--;
-          if(left == 0) {
-            resolve(domains);
+          } else if (domain.twitter) {
+            var url = new URL(domain.url);
+            links[url.host] = "https://twitter.com/share?url=" + url.host + "&amp;text=Security is important, @" + domain.twitter + ". We'd like it if you supported two factor auth.&amp;hashtags=SupportTwoFactorAuth";
           }
         });
+        left--;
+        if(left == 0) {
+          resolve(domains);
+        }
       });
     });
     module.exports.Domains = domains;
