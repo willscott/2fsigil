@@ -46,10 +46,10 @@ gulp.task('build', (cb) => {
 });
 
 gulp.task('watch', ['build'], () => {
-  $.livereload.listen();
+  //$.livereload.listen();
 
   gulp.watch(['./src/**/*']).on("change", () => {
-    $.runSequence('build', $.livereload.reload);
+    $.runSequence('build'); //, $.livereload.reload);
   });
 });
 
@@ -116,7 +116,7 @@ function mergeAll(dest) {
 function buildJS(target) {
   const files = [
     'background.js',
-    'livereload.js'
+    //'livereload.js'
   ]
 
   let tasks = files.map( file => {
