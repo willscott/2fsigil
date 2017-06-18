@@ -44,6 +44,11 @@ function createSetIconAction(path, callback) {
 
 function updateRules(domains) {
   var conditions = [];
+  // 2factorauth notably has subdomains for google, but not www.google.com. add it:
+  conditions.push(new chrome.declarativeContent.PageStateMatcher({
+    pageUrl: {hostSuffix: "google.com"}
+  }));
+  
   domains.forEach(function(domain) {
     var url = new URL(domain).host;
     if (url.startsWith("www.")) {
